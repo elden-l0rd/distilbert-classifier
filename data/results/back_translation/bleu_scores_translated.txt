@@ -1,0 +1,28 @@
+File: data/results/translated_mt.xlsx
+Highest BLEU Score: 52.40394164709004
+Lowest BLEU Score: 4.60393003301536
+Median BLEU Score: 25.175497013778873
+Mean BLEU Score: 26.1679722247599
+=========================================
+
+File: data/results/translated_bn.xlsx
+Highest BLEU Score: 41.0397021073671
+Lowest BLEU Score: 0.2865923581352957
+Median BLEU Score: 16.82435688750981
+Mean BLEU Score: 17.18241576410875
+=========================================
+
+File: data/results/translated_af.xlsx
+Highest BLEU Score: 59.92119924592533
+Lowest BLEU Score: 7.03397115433674
+Median BLEU Score: 28.72726894964286
+Mean BLEU Score: 29.98836653535417
+=========================================
+
+File: data/results/translated_kn.xlsx
+Highest BLEU Score: 38.76235226254755
+Lowest BLEU Score: 0.08816376727335981
+Median BLEU Score: 15.511693153130423
+Mean BLEU Score: 16.54616374888749
+=========================================
+
