@@ -55,7 +55,7 @@ def text_preprocessing(df):
     rm_stopwords(df)
     lemmatize(df)
 
-    k = random.randint(0, len(df)) # arbitary row to show that words have been removed
+    k = random.randint(0, len(df)-1) # arbitary row to show that words have been removed
     print(f"Bef rm duplicates: {len(df.iloc[k]['Desc'])}")
     df['Desc'] = df['Desc'].apply(lambda x: list(set([word.lower() for word in x]))) # to remove duplicates
     print(f"Aft rm duplicates: {len(df.iloc[k]['Desc'])}")
@@ -74,33 +74,18 @@ def split_data(df, train_set_size, test_set_size, dev, symmetric=False):
     '''
     
     if not dev: # no dev set
-        while True:
-            df_train, df_test = train_test_split(df, test_size=1-train_set_size)
-            if symmetric:
-                min_samples = min(len(df_train), len(df_test))
-                if len(df_train) > min_samples:
-                    df_train = df_train.sample(n=min_samples)
-                elif len(df_test) > min_samples:
-                    df_test = df_test.sample(n=min_samples)
-
-                c = set([0, 1, 2, 3, 4])
-                if set(df_train['label'].unique()) != c or \
-                    set(df_test['label'].unique()) != c:
-                        continue
-                else: break
+        df_train, df_test = train_test_split(df, test_size=1-train_set_size)
+        if symmetric:
+            min_samples = min(len(df_train), len(df_test))
+            if len(df_train) > min_samples:
+                df_train = df_train.sample(n=min_samples)
+            elif len(df_test) > min_samples:
+                df_test = df_test.sample(n=min_samples)
         return df_train, df_test
     else:
-        while True:
-            df_train, temp = train_test_split(df, test_size=1-train_set_size)
-            df_test, df_dev = train_test_split(temp, test_size=test_set_size)
-
-            c = set([0, 1, 2, 3, 4])
-            if set(df_train['label'].unique()) != c or \
-                set(df_test['label'].unique()) != c or \
-                set(df_dev['label'].unique()) != c:
-                    continue
-            else: break
-        return df_train, df_test, df_dev
+        df_train, temp = train_test_split(df, test_size=1-train_set_size)
+        df_test, df_dev = train_test_split(temp, test_size=test_set_size)
+    return df_train, df_test, df_dev
 
 def stemming(sentence):
     stemmer = SnowballStemmer("english")
