@@ -1,33 +1,36 @@
+'''
+PART 1 of the code performs back-translations on the dataset and saves into a new file.
+PART 2 of the code trains a model on the new translated dataset.
+'''
+
 import pandas as pd
 from modules.preprocessing import basic_processing
 from modules.translate import back_translation
-
 from modules import preprocessing as pre
 from modules import extract_keywords as ek
 from modules import visualise as vis
-import models.model as model
+import models.feedforward_model as model
 
 # Section to create new translations
 # target = 'af' # Afrikaans
 target = 'mt' # Maltese
 # target = 'bn' # Bengali
 # target = 'kn' # Kannada
-'''
-PATH = 'data/external/mitre-classified.xlsx'
-df = pd.read_excel(PATH)
 
-# Basic cleaning of data
-df = basic_processing(df)
-df['NameDesc_original'] = df['NameDesc']
-df['NameDesc'] = df['NameDesc'].apply(lambda x: back_translation(text=x, target=target).text)
-df.to_excel(f'data/results/translated_{target}.xlsx', index=False)
-'''
+'''PART 1: Translate the dataset'''
+# PATH = 'data/external/dataset.xlsx'
+# df = pd.read_excel(PATH)
+# # Basic cleaning of data
+# df = basic_processing(df)
+# df['Desc'] = df['Name'] + ' ' + df['Desc']
+# df['Desc'] = df['Desc'].apply(lambda x: back_translation(text=x, target=target).text)
+# df.to_excel(f'data/results/translated_{target}.xlsx', index=False)
 
-# Train model
+'''PART 2: Train the model'''
+# Standard feedforward neural network model
 PATH = f'data/results/translated_{target}.xlsx'
 df = pd.read_excel(PATH)
 
-# train test dev split
 df_train, df_test, df_dev = pre.split_data(df, train_set_size=0.3, test_set_size=0.7, dev=True)
 
 col_toDrop = ['Ref', 'Name', 'Desc', 'Confidentiality', 'Integrity', 'Availability', 'Ease Of Exploitation', 'References', 'Unnamed: 0']

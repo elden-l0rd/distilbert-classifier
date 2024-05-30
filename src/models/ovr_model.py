@@ -1,5 +1,4 @@
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.model_selection import train_test_split
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
@@ -10,9 +9,6 @@ base_classifier = LogisticRegression()
 clf = OneVsRestClassifier(base_classifier)
 
 def vectorize(df_train, df_test):
-    # df_train['Desc'] = df_train['Desc'].apply(lambda x: ' '.join(x))
-    # df_test['Desc'] = df_test['Desc'].apply(lambda x: ' '.join(x))
-
     X_train_tfidf = tfidf_vectorizer.fit_transform(df_train['Desc']).toarray()
     X_test_tfidf = tfidf_vectorizer.transform(df_test['Desc']).toarray()
 

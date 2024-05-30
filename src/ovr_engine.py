@@ -1,3 +1,7 @@
+'''
+OneVsRest classifier for STRIDE framework
+'''
+
 import pandas as pd
 from modules import preprocessing as pre
 from modules import extract_keywords as ek

@@ -39,20 +39,20 @@ print(df['RAPIDS'].value_counts())
 df = df[df['RAPIDS'].isin([1, 3])]
 change_mapping = {1: 0, 3: 1}
 df['RAPIDS'] = df['RAPIDS'].map(change_mapping)
-# distilBERT model --> 2, 4
+# distilBERT STRIDE model already classifies --> 2, 4
 # remove 2, 4, 5
 df['Desc'] = df['Name'] + ' ' + df['Desc']
 
-# stop_words = set(stopwords.words('english'))
+stop_words = set(stopwords.words('english'))
 
-# def remove_stopwords(text):
-#     tokens = word_tokenize(text)
-#     filtered_tokens = [word for word in tokens if word.lower() not in stop_words]
-#     return ' '.join(filtered_tokens)
+def remove_stopwords(text):
+    tokens = word_tokenize(text)
+    filtered_tokens = [word for word in tokens if word.lower() not in stop_words]
+    return ' '.join(filtered_tokens)
 
-# df['Desc'] = df['Desc'].apply(remove_stopwords)
+df['Desc'] = df['Desc'].apply(remove_stopwords)
 
-MAX_LEN = 512
+MAX_LEN = 512 # max tokens accepted by BERT
 TRAIN_BATCH_SIZE = 8
 VALID_BATCH_SIZE = 4
 EPOCHS = 3
@@ -63,8 +63,8 @@ class Dataset(Dataset):
     def __init__(self, dataframe, tokenizer, max_len):
         self.tokenizer = tokenizer
         self.data = dataframe
-        self.Desc = dataframe.Desc
-        self.targets = dataframe.RAPIDS
+        self.Desc = dataframe.Desc # This is the column that contains text data
+        self.targets = dataframe.RAPIDS # This is the column to map to
         self.max_len = max_len
 
     def __len__(self):
@@ -75,6 +75,7 @@ class Dataset(Dataset):
         Desc = " ".join(Desc.split())
 
         tokens = self.tokenizer.tokenize(Desc)
+        # truncate first 128 tokens and last 382
         if len(tokens) > 510:
             tokens = tokens[:128] + tokens[-382:]
             Desc = self.tokenizer.convert_tokens_to_string(tokens)
@@ -128,7 +129,7 @@ class DistilBERTClass(torch.nn.Module):
         self.l1 = transformers.DistilBertModel.from_pretrained('distilbert-base-uncased')
         self.pre_classifier = torch.nn.Linear(768, 768)
         self.dropout = torch.nn.Dropout(0.3)
-        self.classifier = torch.nn.Linear(768, 2)
+        self.classifier = torch.nn.Linear(768, 2) # 2 classes
 
     def forward(self, input_ids, attention_mask):
         distilbert_output = self.l1(input_ids=input_ids, attention_mask=attention_mask)
@@ -185,30 +186,18 @@ f1 = f1_score(true_labels, predictions, average='weighted')
 print("Confusion Matrix:\n", cm)
 print("F1 score:", f1)
 
-# torch.save(model.state_dict(), 'src/models/BERT/distilBert_RAPIDS.pth')
+torch.save(model.state_dict(), 'src/models/BERT/distilBert_RAPIDS.pth')
+'''
+It is possible to save a snapshot of the model and continue training later.
+Refer to 
+    https://huggingface.co/docs/transformers/en/main_classes/model
+    https://discuss.huggingface.co/t/what-is-the-purpose-of-save-pretrained/9167
+'''
 # model = torch.load('src/models/BERT/distilBert_RAPIDS.pth')
 
-'''
-Without removing stopwords:
-Epoch: 0, Loss:  0.6883463263511658
-Epoch: 1, Loss:  0.2140614092350006
-Epoch: 2, Loss:  0.19420138001441956
-Confusion Matrix:
- [[17  0]
- [ 7 14]]
-F1 score: 0.8130937098844673
-
-After removing stopwords:
-Epoch: 0, Loss:  0.6895748972892761
-Epoch: 1, Loss:  0.19577600061893463
-Epoch: 2, Loss:  0.13437728583812714
-Confusion Matrix:
- [[16  1]
- [ 4 17]]
-F1 score: 0.8686946055367107
-'''
 
 ######## UNCOMMENT TO FIND BEST HYPERPARAMETERS ########
+######## and also comment out the for-loop train(epoch) code at line 165 ########
 
 # from sklearn.model_selection import ParameterSampler
 # param_grid = {
@@ -242,3 +231,25 @@ F1 score: 0.8686946055367107
 
 # print(f"Best Score: {best_score}")
 # print(f"Best Params: {best_params}")
+
+
+############# Results #############
+'''
+Without removing stopwords:
+Epoch: 0, Loss:  0.6883463263511658
+Epoch: 1, Loss:  0.2140614092350006
+Epoch: 2, Loss:  0.19420138001441956
+Confusion Matrix:
+ [[17  0]
+ [ 7 14]]
+F1 score: 0.8130937098844673
+
+After removing stopwords:
+Epoch: 0, Loss:  0.6895748972892761
+Epoch: 1, Loss:  0.19577600061893463
+Epoch: 2, Loss:  0.13437728583812714
+Confusion Matrix:
+ [[16  1]
+ [ 4 17]]
+F1 score: 0.8686946055367107
+'''

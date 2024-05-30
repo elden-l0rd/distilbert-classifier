@@ -47,7 +47,7 @@ def remove_stopwords(text):
 
 df['Desc'] = df['Desc'].astype(str).apply(remove_stopwords)
 
-MAX_LEN = 512
+MAX_LEN = 512 # max tokens accepted by BERT
 TRAIN_BATCH_SIZE = 8
 VALID_BATCH_SIZE = 4
 EPOCHS = 3
@@ -58,8 +58,8 @@ class Dataset(Dataset):
     def __init__(self, dataframe, tokenizer, max_len):
         self.tokenizer = tokenizer
         self.data = dataframe
-        self.Desc = dataframe.Desc
-        self.targets = dataframe.label
+        self.Desc = dataframe.Desc # This is the column that contains text data
+        self.targets = dataframe.label # This is the column to map to
         self.max_len = max_len
 
     def __len__(self):
@@ -70,6 +70,7 @@ class Dataset(Dataset):
         Desc = " ".join(Desc.split())
 
         tokens = self.tokenizer.tokenize(Desc)
+        # truncate first 128 tokens and last 382
         if len(tokens) > 510:
             tokens = tokens[:128] + tokens[-382:]
             Desc = self.tokenizer.convert_tokens_to_string(tokens)
@@ -123,7 +124,7 @@ class DistilBERTClass(torch.nn.Module):
         self.l1 = transformers.DistilBertModel.from_pretrained('distilbert-base-uncased')
         self.pre_classifier = torch.nn.Linear(768, 768)
         self.dropout = torch.nn.Dropout(0.3)
-        self.classifier = torch.nn.Linear(768, 5)
+        self.classifier = torch.nn.Linear(768, 5) # 5 classes
 
     def forward(self, input_ids, attention_mask):
         distilbert_output = self.l1(input_ids=input_ids, attention_mask=attention_mask)
@@ -181,8 +182,16 @@ print("Confusion Matrix:\n", cm)
 print("F1 score:", f1)
 
 torch.save(model.state_dict(), 'src/models/BERT/distilBert_STRIDE.pth')
-model = torch.load('src/models/BERT/distilBert_STRIDE.pth')
+'''
+It is possible to save a snapshot of the model and continue training later.
+Refer to 
+    https://huggingface.co/docs/transformers/en/main_classes/model
+    https://discuss.huggingface.co/t/what-is-the-purpose-of-save-pretrained/9167
+'''
+# model = torch.load('src/models/BERT/distilBert_STRIDE.pth')
 
+
+############# Results #############
 '''
 Without removing stopwords:
 Epoch: 0, Loss:  1.5860810279846191

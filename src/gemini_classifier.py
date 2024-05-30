@@ -1,3 +1,10 @@
+'''
+Passes data into the Gemini API to classify text. It is free to use as of 30 may 2024.
+
+Ensure the API key is generated from the Gemini website as stated in the code documentation.
+The API key is stored in a .env file with variable name "gemini_api_key", at the root folder.
+'''
+
 import pandas as pd
 import os
 import requests

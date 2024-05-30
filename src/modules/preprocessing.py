@@ -68,39 +68,39 @@ def split_data(df, train_set_size, test_set_size, dev, symmetric=False):
     '''
     train_set_size + test_set_size + dev_set_size = 1
 
-    symmetric: True for ovr_engine, there needs to have equal number of samples for
+    symmetric: Set True for ovr_engine, there needs to have equal number of samples for
                training and testing dataset
                default: False
     '''
     
     if not dev: # no dev set
-        # while True:
-        df_train, df_test = train_test_split(df, test_size=1-train_set_size)
-        if symmetric:
-            min_samples = min(len(df_train), len(df_test))
-            if len(df_train) > min_samples:
-                df_train = df_train.sample(n=min_samples)
-            elif len(df_test) > min_samples:
-                df_test = df_test.sample(n=min_samples)
+        while True:
+            df_train, df_test = train_test_split(df, test_size=1-train_set_size)
+            if symmetric:
+                min_samples = min(len(df_train), len(df_test))
+                if len(df_train) > min_samples:
+                    df_train = df_train.sample(n=min_samples)
+                elif len(df_test) > min_samples:
+                    df_test = df_test.sample(n=min_samples)
 
-            # c = set([0, 1, 2, 3, 4])
-            # if set(df_train['label'].unique()) != c or \
-            #     set(df_test['label'].unique()) != c:
-            #         continue
-            # else: break
-    return df_train, df_test
-    # else:
-    #     while True:
-    #         df_train, temp = train_test_split(df, test_size=1-train_set_size)
-    #         df_test, df_dev = train_test_split(temp, test_size=test_set_size)
+                c = set([0, 1, 2, 3, 4])
+                if set(df_train['label'].unique()) != c or \
+                    set(df_test['label'].unique()) != c:
+                        continue
+                else: break
+        return df_train, df_test
+    else:
+        while True:
+            df_train, temp = train_test_split(df, test_size=1-train_set_size)
+            df_test, df_dev = train_test_split(temp, test_size=test_set_size)
 
-    #         c = set([0, 1, 2, 3, 4])
-    #         if set(df_train['label'].unique()) != c or \
-    #             set(df_test['label'].unique()) != c or \
-    #             set(df_dev['label'].unique()) != c:
-    #                 continue
-    #         else: break
-    #     return df_train, df_test, df_dev
+            c = set([0, 1, 2, 3, 4])
+            if set(df_train['label'].unique()) != c or \
+                set(df_test['label'].unique()) != c or \
+                set(df_dev['label'].unique()) != c:
+                    continue
+            else: break
+        return df_train, df_test, df_dev
 
 def stemming(sentence):
     stemmer = SnowballStemmer("english")

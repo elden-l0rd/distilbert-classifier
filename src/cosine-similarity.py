@@ -1,4 +1,13 @@
+'''
 ########### Cosine similarity ###########
+Compares the cosine similarity between the embeddings of the descriptions in the dataset.
+
+Intra-label compares the similarity between descriptions of the same label.
+Inter-label compares the similarity between descriptions of different labels.
+
+Results are at the end of the code.
+'''
+
 import numpy as np
 import pandas as pd
 import itertools
@@ -74,15 +83,16 @@ print("\nInter-label Cosine Similarities:")
 for key, value in inter_stats.items():
     print(f"{key}: {value:.3f}")
 
+
 '''
-Statistics for Intra-label Cosine Similarities:
+Results for Intra-label Cosine Similarities:
 Average: 0.880
 Mean: 0.880
 Median: 0.883
 Min: 0.854
 Max: 0.892
 
-Statistics for Inter-label Cosine Similarities:
+Results for Inter-label Cosine Similarities:
 Average: 0.868
 Mean: 0.868
 Median: 0.873
